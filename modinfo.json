@@ -1,0 +1,25 @@
+{
+    "display_name": "Sentient Replays",
+    "description": "Lists only all-human replays by default.",
+    "icon": "http://i.imgur.com/4RXucGO.png",
+    "author": "lyrid",
+    "build": "71937",
+    "context": "client",
+    "date": "2014/09/20",
+    "identifier": "com.pa.lyrid.SentientReplays",
+    "forum-not": "https://forums.uberent.com/threads/rel-advanced-planet-details-71937.54290/",
+    "id": "sentientreplays",
+    "priority": 100,
+    "signature": "TBD",
+    "version": "1.0",
+    "category": [
+        "ui",
+        "replay browser"
+    ],
+    "scenes": {
+        "replay_browser": [
+            "coui://ui/mods/SentientReplays/SentientReplays_replay_browser.js"
+        ]
+    },
+    "enabled": true
+}
