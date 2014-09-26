@@ -4,7 +4,6 @@
 // of AI games and Galactic Wars to find something
 // interesting to watch :-)
 
-
 /// --- debug function ---
 model.showMembers = function (obj) {
   var result = [];
@@ -24,9 +23,10 @@ model.showMembers = function (obj) {
 // data-bind these to watched variables so they update the 
 // list when clicked (see below)
 var SentientReplaysInjectedHTML = '\
-<input type="checkbox"  data-bind="checked: model.ShowGalacticWars"  >Show Galactic Wars</>\
-<br/>\
-<input type="checkbox"  data-bind="checked: model.ShowAIGames" >Show AI Games</>\
+<div <div style="margin-top:5px; margin-left:5px;">\
+<label><input type="checkbox"  data-bind="checked: model.ShowGalacticWars"  >Show Galactic Wars</></label>\
+<label><input type="checkbox"  data-bind="checked: model.ShowAIGames" >Show AI Games</></label>\
+</div>\
 '
 // there's no id for the search div, so let's guess it will always be the first
 // of its class on the page (heh, every HTML/js code must have some stupid hack, no?)
@@ -58,6 +58,8 @@ model.filteredGameList = ko.computed({read: function () {
             var allGames = model.gameList().concat(model.lanGameList());
             var filteredGames = [];
             var selectedGameStillVisible = false;
+            
+            // for discovering the fields in a game record:
             //model.showMembers (allGames[0]);
 
             _.forEach(allGames, function(game){
