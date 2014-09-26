@@ -11,7 +11,7 @@
     "id": "sentientreplays",
     "priority": 100,
     "signature": "TBD",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "category": [
         "ui",
         "replay browser"
