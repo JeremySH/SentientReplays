@@ -72,7 +72,7 @@ var callbackFunction = function(gWarEnabled) {
 model.ShowGalacticWars = ko.observable(false);
 model.ShowGalacticWars.subscribe(callbackFunction);
 
-model.minHumans = ko.observable(1)
+model.minHumans = ko.observable(2)
 model.minHumans.subscribe(callbackFunction);
 
 model.maxAI = ko.observable(0)
