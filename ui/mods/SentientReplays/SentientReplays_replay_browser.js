@@ -27,6 +27,19 @@ var SentientReplaysInjectedHTML = '\
 <label><input type="checkbox"  data-bind="checked: model.ShowGalacticWars"  >Show Galactic Wars</></label>\
 <label><input type="checkbox"  data-bind="checked: model.ShowAIGames" >Show AI Games</></label>\
 </div>\
+<div>\
+    <label for="SentientReplays">\
+    Minimum Humans \
+    </label>\
+    <select class="selectpicker form-control" id="replay-list-scope" name="game-state" data-bind="selectPicker: model.minHumans">\
+        <option value="1">1</option>\
+        <option value="2">2</option>\
+        <option value="3">3</option>\
+        <option value="4">4</option>\
+        <option value="5">5</option>\
+        <option value="6">6</option>\
+    </select>\
+</div>\
 '
 // there's no id for the search div, so let's guess it will always be the first
 // of its class on the page (heh, every HTML/js code must have some stupid hack, no?)
@@ -49,6 +62,9 @@ model.ShowGalacticWars.subscribe(callbackFunction);
 
 model.ShowAIGames = ko.observable(false);
 model.ShowAIGames.subscribe(callbackFunction);
+
+model.minHumans = ko.observable(1)
+model.minHumans.subscribe(callbackFunction);
 
 // ----------------- Override PA code Hackery -----------------------
 
@@ -76,17 +92,49 @@ model.filteredGameList = ko.computed({read: function () {
                   // These actually should access proper fields in the game
                   // record, but I have a total lack of knowledge how to do that.
                   // So, just filter based on text description.
+                  var hasAI = false;
+                  var isGalactic = false;
+                  var numHumans = 1;
                   
                   // times of 0 seconds can't be watched anyway
                   if (game.duration.indexOf("0:00") === 0) return;
                   
-                  if (!model.ShowGalacticWars()) {
-                    if (game.searchable.indexOf("Galactic War".toUpperCase()) != -1) return;
+                  if (game.searchable.indexOf("Galactic War".toUpperCase()) != -1){
+                    if (!model.ShowGalacticWars())
+                      return;
+                    else
+                      isGalactic = true;
                   }
                 
-                  if (!model.ShowAIGames()) {
-                    if (game.searchable.indexOf("AI)".toUpperCase()) != -1) return;
+                  if (game.searchable.indexOf("AI)".toUpperCase()) != -1){
+                    if (!model.ShowAIGames()) 
+                      return;
+                    else 
+                      hasAI = true;
                   }
+
+                  if (isGalactic) {
+                    numHumans = 1;
+                  }
+                  else {
+                    if (hasAI) {
+                      // parse the AI game to count number of humans
+                      // skip the "(+2 AI)" kind of stuff
+                      var playerMeat = game.name.match(/[^\(]+/);
+                      var humanNames = playerMeat[0].match(/[^ ]+/g);
+                      numHumans = humanNames.length;
+                      }
+                    else {
+                      // parse a full human game to count the number of humans.
+                      var humanNames = game.name.match(/[^ ]+/g);
+                      numHumans = humanNames.length;
+                    }
+                  }
+                
+                  //console.log(numHumans);
+                
+                  if (numHumans < parseInt(model.minHumans())) return;
+
                 // CHANGED CODE END
                                 
                 // Look for games matching the search string
