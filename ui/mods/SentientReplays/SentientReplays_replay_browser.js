@@ -24,13 +24,15 @@ model.showMembers = function (obj) {
 // list when clicked (see below)
 var SentientReplaysInjectedHTML = '\
 <div class="form-group" style="margin-top:5px; margin-left:5px;">\
-<label><input type="checkbox"  data-bind="checked: model.ShowGalacticWars"  >Show Galactic Wars</></label>\
+  <label data-bind="click: function () { model.ShowGalacticWars(!model.ShowGalacticWars());}">\
+    <input type="checkbox"  style="pointer-events: none !important;" data-bind="checked: model.ShowGalacticWars"  >Show Galactic Wars</>\
+  </label>\
 </div>\
 <div class="form-group">\
     <label>\
     Minimum Humans\
     </label>\
-    <select class="selectpicker form-control" id="replay-list-scope" name="game-state" data-bind="selectPicker: model.minHumans">\
+    <select class="selectpicker form-control" id="replay-list-min-humans" name="minimum-humans" data-bind="selectPicker: model.minHumans">\
         <option value="1">1</option>\
         <option value="2">2</option>\
         <option value="3">3</option>\
@@ -43,7 +45,7 @@ var SentientReplaysInjectedHTML = '\
     <label>\
     Maximum AI \
     </label>\
-    <select class="selectpicker form-control" id="replay-list-scope" name="game-state" data-bind="selectPicker: model.maxAI">\
+    <select class="selectpicker form-control" id="replay-list-max-ai" name="maximum-ai" data-bind="selectPicker: model.maxAI">\
         <option value="0">0</option>\
         <option value="1">1</option>\
         <option value="2">2</option>\
@@ -59,7 +61,6 @@ $(".form-group").first().append(SentientReplaysInjectedHTML);
 
 
 // ----------------- javascript Hackery -----------------------
-
 // Create a watched variable for each checkbox
 // that also reloads the replay list when clicked.
 // These are bound to the checkboxes using the injected HTML above
@@ -67,16 +68,37 @@ $(".form-group").first().append(SentientReplaysInjectedHTML);
 var callbackFunction = function(gWarEnabled) {
   // the following is defined in the original replay_browser.js file
   model.updateReplayData();
+  model.storeSettings()
 };
 
-model.ShowGalacticWars = ko.observable(false);
-model.ShowGalacticWars.subscribe(callbackFunction);
+// load and store values
+model.loadSettings = function(){
+  if ("SentientReplays-ShowGalacticWars" in localStorage)
+    model.ShowGalacticWars = ko.observable(decode(localStorage["SentientReplays-ShowGalacticWars"]));
+  else
+    model.ShowGalacticWars = ko.observable(false);
 
-model.minHumans = ko.observable(2)
-model.minHumans.subscribe(callbackFunction);
+  if ("SentientReplays-MinimumHumans" in localStorage)
+    model.minHumans = ko.observable(decode(localStorage["SentientReplays-MinimumHumans"]));
+  else
+    model.minHumans = ko.observable(2);
 
-model.maxAI = ko.observable(0)
-model.maxAI.subscribe(callbackFunction);
+  if ("SentientReplays-MaximumAI" in localStorage)
+    model.maxAI = ko.observable(decode(localStorage["SentientReplays-MaximumAI"]));
+  else
+    model.maxAI = ko.observable(0);
+  
+  model.ShowGalacticWars.subscribe(callbackFunction);
+  model.minHumans.subscribe(callbackFunction);
+  model.maxAI.subscribe(callbackFunction);
+};
+
+model.storeSettings = function() {
+  localStorage["SentientReplays-ShowGalacticWars"] = encode(model.ShowGalacticWars());
+  localStorage["SentientReplays-MinimumHumans"] = encode(model.minHumans());
+  localStorage["SentientReplays-MaximumAI"] = encode(model.maxAI());
+};
+
 
 // ----------------- Override PA code Hackery -----------------------
 
@@ -174,3 +196,7 @@ model.filteredGameList = ko.computed({read: function () {
             return filteredGames;
 
         }, deferEvaluation: true});
+
+
+/////////// STARTUP
+model.loadSettings();
