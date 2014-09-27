@@ -23,13 +23,12 @@ model.showMembers = function (obj) {
 // data-bind these to watched variables so they update the 
 // list when clicked (see below)
 var SentientReplaysInjectedHTML = '\
-<div <div style="margin-top:5px; margin-left:5px;">\
+<div class="form-group" style="margin-top:5px; margin-left:5px;">\
 <label><input type="checkbox"  data-bind="checked: model.ShowGalacticWars"  >Show Galactic Wars</></label>\
-<label><input type="checkbox"  data-bind="checked: model.ShowAIGames" >Show AI Games</></label>\
 </div>\
-<div>\
-    <label for="SentientReplays">\
-    Minimum Humans \
+<div class="form-group">\
+    <label>\
+    Minimum Humans\
     </label>\
     <select class="selectpicker form-control" id="replay-list-scope" name="game-state" data-bind="selectPicker: model.minHumans">\
         <option value="1">1</option>\
@@ -38,6 +37,19 @@ var SentientReplaysInjectedHTML = '\
         <option value="4">4</option>\
         <option value="5">5</option>\
         <option value="6">6</option>\
+    </select>\
+</div>\
+<div class="form-group">\
+    <label>\
+    Maximum AI \
+    </label>\
+    <select class="selectpicker form-control" id="replay-list-scope" name="game-state" data-bind="selectPicker: model.maxAI">\
+        <option value="0">0</option>\
+        <option value="1">1</option>\
+        <option value="2">2</option>\
+        <option value="3">3</option>\
+        <option value="4">4</option>\
+        <option value="10000">Any</option>\
     </select>\
 </div>\
 '
@@ -60,11 +72,11 @@ var callbackFunction = function(gWarEnabled) {
 model.ShowGalacticWars = ko.observable(false);
 model.ShowGalacticWars.subscribe(callbackFunction);
 
-model.ShowAIGames = ko.observable(false);
-model.ShowAIGames.subscribe(callbackFunction);
-
 model.minHumans = ko.observable(1)
 model.minHumans.subscribe(callbackFunction);
+
+model.maxAI = ko.observable(0)
+model.maxAI.subscribe(callbackFunction);
 
 // ----------------- Override PA code Hackery -----------------------
 
@@ -95,6 +107,7 @@ model.filteredGameList = ko.computed({read: function () {
                   var hasAI = false;
                   var isGalactic = false;
                   var numHumans = 1;
+                  var numAI = 0;
                   
                   // times of 0 seconds can't be watched anyway
                   if (game.duration.indexOf("0:00") === 0) return;
@@ -107,9 +120,6 @@ model.filteredGameList = ko.computed({read: function () {
                   }
                 
                   if (game.searchable.indexOf("AI)".toUpperCase()) != -1){
-                    if (!model.ShowAIGames()) 
-                      return;
-                    else 
                       hasAI = true;
                   }
 
@@ -123,17 +133,21 @@ model.filteredGameList = ko.computed({read: function () {
                       var playerMeat = game.name.match(/[^\(]+/);
                       var humanNames = playerMeat[0].match(/[^ ]+/g);
                       numHumans = humanNames.length;
+                      var temp = game.name.match(/\(\+ \d AI\)/);
+                      numAI = parseInt(temp[0].match(/\d+/));
                       }
                     else {
                       // parse a full human game to count the number of humans.
                       var humanNames = game.name.match(/[^ ]+/g);
                       numHumans = humanNames.length;
+                      numAI = 0;
                     }
                   }
                 
                   //console.log(numHumans);
                 
                   if (numHumans < parseInt(model.minHumans())) return;
+                  if (numAI > parseInt(model.maxAI())) return;
 
                 // CHANGED CODE END
                                 
