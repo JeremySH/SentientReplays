@@ -68,7 +68,7 @@ $(".form-group").first().append(SentientReplaysInjectedHTML);
 var callbackFunction = function(gWarEnabled) {
   // the following is defined in the original replay_browser.js file
   model.updateReplayData();
-  model.storeSettings()
+  model.storeSettings();
 };
 
 // load and store values
@@ -119,7 +119,7 @@ model.filteredGameList = ko.computed({read: function () {
                 // TODO: add filtering here (see server_browser for examples)
 
                 if (!matched) return;
-                
+
 
                 
                 // CHANGED CODE START
@@ -130,18 +130,19 @@ model.filteredGameList = ko.computed({read: function () {
                   var isGalactic = false;
                   var numHumans = 1;
                   var numAI = 0;
-                  
                   // times of 0 seconds can't be watched anyway
-                  if (game.duration.indexOf("0:00") === 0) return;
-                  
+                  //if (game.duration.indexOf("0:00") === 0) return;
+
                   if (game.searchable.indexOf("Galactic War".toUpperCase()) != -1){
                     if (!model.ShowGalacticWars())
                       return;
                     else
                       isGalactic = true;
                   }
-                
-                  if (game.searchable.indexOf("AI)".toUpperCase()) != -1){
+      
+                                 
+                  //if (game.searchable.indexOf("AI)".toUpperCase()) != -1){
+                  if (game.name.match(/\(\+ \d AI\)/) != null){
                       hasAI = true;
                   }
 
@@ -167,10 +168,12 @@ model.filteredGameList = ko.computed({read: function () {
                   }
                 
                   //console.log(numHumans);
-                
+
+                                
                   if (numHumans < parseInt(model.minHumans())) return;
                   if (numAI > parseInt(model.maxAI())) return;
-
+                
+                
                 // CHANGED CODE END
                                 
                 // Look for games matching the search string
