@@ -3,7 +3,7 @@
     "description": "Lists only all-human replays by default.",
     "icon": "http://i.imgur.com/4RXucGO.png",
     "author": "lyrid",
-    "build": "72332",
+    "build": "74525",
     "context": "client",
     "date": "2014/11/13",
     "identifier": "com.pa.lyrid.SentientReplays",
