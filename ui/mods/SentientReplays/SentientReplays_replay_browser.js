@@ -33,6 +33,7 @@ var SentientReplaysInjectedHTML = '\
     Minimum Humans\
     </label>\
     <select class="selectpicker form-control" id="replay-list-min-humans" name="minimum-humans" data-bind="selectPicker: model.minHumans">\
+        <option value="0">0</option>\
         <option value="1">1</option>\
         <option value="2">2</option>\
         <option value="3">3</option>\
@@ -120,67 +121,53 @@ model.filteredGameList = ko.computed({read: function () {
 
                 if (!matched) return;
 
+                // Look for games matching the search string
+                if (model.searchFilter().length > 0) {
+                    if (game.searchable.indexOf(model.searchFilter().toUpperCase()) === -1) return;
+                }
 
-                
-                // CHANGED CODE START
-                  // These actually should access proper fields in the game
-                  // record, but I have a total lack of knowledge how to do that.
-                  // So, just filter based on text description.
+                // Sentient Replays CHANGED CODE START
                   var hasAI = false;
                   var isGalactic = false;
-                  var numHumans = 1;
+                  var numHumans = 0;
                   var numAI = 0;
+                  var numPlayers = 0;
+                  
                   // times of 0 seconds can't be watched anyway
                   //if (game.duration.indexOf("0:00") === 0) return;
 
-                  if (game.searchable.indexOf("Galactic War".toUpperCase()) != -1){
+                  if (game.searchable.indexOf(": Galactic War".toUpperCase()) != -1){
                     if (!model.ShowGalacticWars())
                       return;
                     else
                       isGalactic = true;
                   }
       
-                                 
-                  //if (game.searchable.indexOf("AI)".toUpperCase()) != -1){
-                  if (game.name.match(/\(\+ \d AI\)/) != null){
-                      hasAI = true;
-                  }
-
-                  if (isGalactic) {
-                    numHumans = 1;
-                  }
-                  else {
-                    if (hasAI) {
-                      // parse the AI game to count number of humans
-                      // skip the "(+2 AI)" kind of stuff
-                      var playerMeat = game.name.match(/[^\(]+/);
-                      var humanNames = playerMeat[0].match(/[^ ]+/g);
-                      numHumans = humanNames.length;
-                      var temp = game.name.match(/\(\+ \d AI\)/);
-                      numAI = parseInt(temp[0].match(/\d+/));
+                  numHumans = 0;
+                  numAI = 0;
+                  numPlayers = 0;
+                  
+                  //console.log(game);
+                  //console.log(game.armies);
+                  
+                  for (var index=0; index < game.armies.length; index++){
+                    numPlayers++;
+                    if (game.armies[index].name != null) {
+                      if (game.armies[index].ai){
+                        hasAI = true;
+                        numAI++;
                       }
-                    else {
-                      // parse a full human game to count the number of humans.
-                      var humanNames = game.name.match(/[^ ]+/g);
-                      numHumans = humanNames.length;
-                      numAI = 0;
+                      else {
+                        numHumans++;
+                      }
                     }
                   }
-                
-                  //console.log(numHumans);
-
                                 
                   if (numHumans < parseInt(model.minHumans())) return;
                   if (numAI > parseInt(model.maxAI())) return;
-                
-                
-                // CHANGED CODE END
-                                
-                // Look for games matching the search string
-                if (model.searchFilter().length > 0) {
-                    if (game.searchable.indexOf(model.searchFilter().toUpperCase()) === -1) return;
-                }
 
+                // Sentient Replays CHANGED CODE END
+                  
                 // Is this the currently selected game? If so, we need to retain the selection
                 if (!!model.currentSelectedGame() && game.name === model.currentSelectedGame().name) {
                     selectedGameStillVisible = true;
@@ -189,9 +176,6 @@ model.filteredGameList = ko.computed({read: function () {
                 // If our filters haven't whacked the game from the list, include in our results
                 filteredGames.push(game);
                 
-                ///for (var army in game.armies) {
-                ///      model.showMembers(army);
-                ///}
             });
 
             if (!selectedGameStillVisible) model.setSelected(null);

@@ -5,13 +5,13 @@
     "author": "lyrid",
     "build": "72332",
     "context": "client",
-    "date": "2014/11/11",
+    "date": "2014/11/13",
     "identifier": "com.pa.lyrid.SentientReplays",
     "forum": "https://forums.uberent.com/threads/rel-sentient-replays-display-only-all-human-games.64499/",
     "id": "sentientreplays",
     "priority": 100,
     "signature": "TBD",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "category": [
         "ui",
         "replay browser"
