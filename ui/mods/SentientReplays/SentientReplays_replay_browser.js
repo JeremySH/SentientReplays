@@ -150,21 +150,29 @@ model.filteredGameList = ko.computed({read: function () {
                   //console.log(game);
                   //console.log(game.armies);
                   
-                  for (var index=0; index < game.armies.length; index++){
-                    numPlayers++;
-                    if (game.armies[index].name != null) {
-                      if (game.armies[index].ai){
-                        hasAI = true;
-                        numAI++;
+                  // force a game version, dunno if this fixes a bug where
+                  // "My Games Only" creates a blank list, but might as well...
+                  if (game.buildVersion != null) {
+                    var buildversion = parseInt(game.buildVersion);
+                    if (buildversion && buildversion > 72331) {
+                      for (var index=0; index < game.armies.length; index++){
+                        numPlayers++;
+                        if (game.armies[index].name != null) {
+                          if (game.armies[index].ai){
+                            hasAI = true;
+                            numAI++;
+                          }
+                          else {
+                            numHumans++;
+                          }
+                        }
                       }
-                      else {
-                        numHumans++;
-                      }
-                    }
-                  }
-                                
                   if (numHumans < parseInt(model.minHumans())) return;
                   if (numAI > parseInt(model.maxAI())) return;
+                    
+                    }
+                  }
+                                                  
 
                 // Sentient Replays CHANGED CODE END
                   
